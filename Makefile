@@ -177,6 +177,9 @@ mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 # http://www.gnu.org/software/make/manual/html_node/Chained-Rules.html
 .PRECIOUS: %.o
 
+# The underscore is for disambiguation with the Linux tools.
+# mkfs strips the underscore when creating the xv6 filesystem.
+
 UPROGS=\
 	$U/_cat\
 	$U/_echo\
@@ -194,6 +197,15 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
+	$U/_ex1\
+	$U/_ex2\
+	$U/_ex3\
+	$U/_ex4\
+	$U/_ex5\
+	$U/_ex6\
+	$U/_ex7\
+	$U/_ex8\
+	$U/_ex9\
 
 
 
