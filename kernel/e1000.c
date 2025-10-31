@@ -101,7 +101,25 @@ e1000_transmit(char *buf, int len)
   // the TX descriptor ring so that the e1000 sends it. Stash
   // a pointer so that it can be freed after send completes.
   //
+  uint32 ring_index = regs[E1000_TDT];
+  if (ring_index < 0 || ring_index > TX_RING_SIZE) {
+    panic("Invalid Ring Index");
+  }
+  struct tx_desc *descriptor = &tx_ring[ring_index];
+  if ((descriptor->status & E1000_TXD_STAT_DD) != E1000_TXD_STAT_DD) {
+    return -1;
+  }
 
+  if (descriptor->addr != 0) {
+    kfree((void*)descriptor->addr);
+  }    
+  descriptor->addr = (uint64)buf;
+  descriptor->length = len;
+
+  descriptor->cmd |= E1000_TXD_CMD_EOP | E1000_TXD_CMD_RS;
+
+  ring_index = (1 + ring_index) % TX_RING_SIZE;
+  regs[E1000_TDT] = ring_index;
   
   return 0;
 }
