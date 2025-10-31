@@ -134,6 +134,28 @@ e1000_recv(void)
   // Create and deliver a buf for each packet (using net_rx()).
   //
 
+  for (;;) {
+    //printf("looping\n");
+    uint32 ring_index = regs[E1000_RDT];
+    if (ring_index < 0 || ring_index > RX_RING_SIZE) {
+        panic("Invalid Ring Index");
+    }
+    struct rx_desc *descriptor = &rx_ring[ring_index];
+    if ((descriptor->status & E1000_RXD_STAT_DD) == E1000_RXD_STAT_DD) {
+      //printf("breaking\n");
+      return;
+    }
+
+    net_rx((char *)descriptor->addr, descriptor->length);
+
+    descriptor->addr = (uint64)kalloc();
+    rx_bufs[ring_index] = (char*)descriptor->addr;
+    descriptor->status = 0;
+
+    ring_index = (ring_index + 1) % RX_RING_SIZE;
+
+    regs[E1000_RDT] = ring_index;
+  }  
 }
 
 void
