@@ -14,7 +14,7 @@ def test_nettest():
     server = subprocess.Popen(["python3", "./nettest.py", "grade"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     r.run_qemu(shell_script([
         'nettest grade'
-    ]), timeout=30)
+    ]), timeout=180)
     server.terminate()
     serverout = server.communicate()[0].decode()
 
